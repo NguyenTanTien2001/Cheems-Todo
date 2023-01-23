@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:to_do_list/pages/auth/forgot_password/forgot_password_page.dart';
-import 'package:to_do_list/pages/auth/reset_password/reset_password_page.dart';
-import '/pages/auth/sign_up/sign_up_page.dart';
 import '/pages/splash/splash_page.dart';
 import '/pages/welcome/welcome_page.dart';
 import '../pages/auth/sign_in/sign_in_page.dart';
@@ -33,12 +30,6 @@ class RouteGenerator {
         return page(child: SplashPage.instance());
       case AppRoutes.SIGN_IN:
         return page(child: SignInPage.instance());
-      case AppRoutes.SIGN_UP:
-        return page(child: SignUpPage.instance());
-      case AppRoutes.FORGOT_PASSWORD:
-        return page(child: ForgotPasswordPage.instance());
-      case AppRoutes.RESET_PASSWORD:
-        return page(child: ResetPasswordPage.instance());
       case AppRoutes.SUCCESSFUL:
         return page(child: SuccessfulScreen());
       default:
