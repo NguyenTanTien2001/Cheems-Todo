@@ -3,6 +3,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:to_do_list/models/meta_user_model.dart';
 
 import '/constants/app_colors.dart';
+import '/models/project_model.dart';
+import '/models/task_model.dart';
+
 
 class FirestoreService {
   final FirebaseFirestore _firebaseFirestore;
@@ -154,4 +157,52 @@ class FirestoreService {
     });
     return false;
   }
+
+  Stream<List<ProjectModel>> projectStream(String uid) {
+    return _firebaseFirestore
+        .collection('project')
+        .where('id_author', isEqualTo: uid)
+        .snapshots()
+        .map(
+          (list) => list.docs.map((doc) {
+            return ProjectModel.fromFirestore(doc);
+          }).toList(),
+        );
+  }
+
+  Stream<List<TaskModel>> taskStream() {
+    return _firebaseFirestore.collection('task').snapshots().map(
+          (list) => list.docs.map((doc) {
+            return TaskModel.fromFirestore(doc);
+          }).toList(),
+        );
+  }
+
+  Future<bool> addTaskProject(ProjectModel projectModel, String taskID) async {
+    List<String> list = projectModel.listTask;
+    list.add(taskID);
+
+    await _firebaseFirestore.collection('project').doc(projectModel.id).update({
+      "list_task": list,
+    }).then((value) {
+      servicesResultPrint('Added task to project');
+      return true;
+    }).catchError((error) {
+      servicesResultPrint('Add task to project failed: $error');
+      return false;
+    });
+    return true;
+  }
+
+  Future<String> addTask(TaskModel task) async {
+    DocumentReference doc = _firebaseFirestore.collection('task').doc();
+    await doc.set(task.toFirestore()).then((onValue) {
+      servicesResultPrint('Added task');
+    }).catchError((error) {
+      servicesResultPrint('Add task failed: $error');
+    });
+    return doc.id;
+  }
+
+
 }
