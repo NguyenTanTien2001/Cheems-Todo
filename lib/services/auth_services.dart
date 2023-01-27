@@ -5,6 +5,8 @@ import '/constants/app_colors.dart';
 import '/pages/auth/sign_in/sign_in_vm.dart';
 import '/pages/auth/sign_up/sign_up_vm.dart';
 import '/pages/auth/forgot_password/forgot_password_vm.dart';
+import '../pages/auth/reset_password/reset_password_vm.dart';
+
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth;
@@ -101,6 +103,32 @@ class AuthenticationService {
 
         default:
           return ForgotPasswordStatus.pause;
+      }
+    }
+  }
+
+   Future<ResetPasswordStatus> changePassword(
+      String code, String password) async {
+    try {
+      await _firebaseAuth.confirmPasswordReset(
+          code: code, newPassword: password);
+      servicesResultPrint('Reset password successful', isToast: false);
+      return ResetPasswordStatus.successful;
+    } on FirebaseAuthException catch (e) {
+      print(e.code);
+      switch (e.code) {
+        case 'invalid-action-code':
+          return ResetPasswordStatus.invalidActionCode;
+        case 'user-disabled':
+          return ResetPasswordStatus.userDisabled;
+        case 'user-not-found':
+          return ResetPasswordStatus.userNotFound;
+        case 'expired-action-code':
+          return ResetPasswordStatus.expiredActionCode;
+        case 'weak-password':
+          return ResetPasswordStatus.weakPassword;
+        default:
+          return ResetPasswordStatus.pause;
       }
     }
   }
