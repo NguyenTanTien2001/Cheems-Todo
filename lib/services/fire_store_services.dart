@@ -204,5 +204,9 @@ class FirestoreService {
     return doc.id;
   }
 
+  void addProject(ProjectModel project) {
+    _firebaseFirestore.collection('project').doc().set(project.toFirestore());
+  }
+
 
 }
