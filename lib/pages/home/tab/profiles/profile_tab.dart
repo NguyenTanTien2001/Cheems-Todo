@@ -60,7 +60,6 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
           });
         } else {
           if (localUser!.photoURL != networkUser.photoURL) {
-            localUser!.updatePhotoURL(networkUser.photoURL);
           }
         }
       }
@@ -84,7 +83,6 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 20.w),
               buildCardInfo(),
               SizedBox(height: 24.w),
               buildListCountTask(),
@@ -105,10 +103,7 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
     return Container(
       width: screenWidth,
       height: 190.w,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.r),
-        color: Colors.white,
-        boxShadow: AppConstants.kBoxShadow,
+      boxShadow: AppConstants.kBoxShadow,
       ),
       child: StreamBuilder<infoStatus>(
         stream: getVm().bsInfoStatus,
