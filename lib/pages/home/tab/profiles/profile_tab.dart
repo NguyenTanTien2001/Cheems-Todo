@@ -49,7 +49,6 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
     super.initState();
     initUser();
   }
-
   void initUser() {
     getVm().getUser().listen((networkUser) {
       // init local user
@@ -104,6 +103,7 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
   Widget buildCardInfo() {
     return Container(
       width: screenWidth,
+
       height: 190.w,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5.r),
@@ -153,7 +153,6 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
       ).pad(20, 20, 0),
     );
   }
-
   @override
   ProfileViewModel getVm() => widget.watch(viewModelProvider).state;
 }

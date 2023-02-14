@@ -1,17 +1,23 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:to_do_list/models/project_model.dart';
 import 'package:to_do_list/util/ui/common_widget/back_to_login.dart';
 
 import '/base/base_state.dart';
-import '/constants/constants.dart';
+import '/constants/constants.dart';h
 import '/pages/home/tab/menu/menu_tab.dart';
+import '/pages/home/tab/project/project_tab.dart';
 import '/pages/home/tab/profiles/profile_tab.dart';
 import '/util/extension/extension.dart';
 import 'home_provider.dart';
 import 'home_vm.dart';
 import 'tab/my_task/my_task_tab.dart';
 import 'tab/quick/quick_tab.dart';
+import 'tab/my_note/my_note_tab.dart';
 import 'widgets/add_new_button.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,6 +42,9 @@ class HomeState extends BaseState<HomePage, HomeViewModel> {
   PageController tabController = PageController();
   ProjectModel? projectMode;
 
+  late AndroidNotificationChannel channel;
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   void logOutClick() {
     getVm().logOut();
   }
@@ -52,7 +61,6 @@ class HomeState extends BaseState<HomePage, HomeViewModel> {
       ProfileTab.instance(),
     ];
   }
-
   void setProjectMode(ProjectModel value) async {
     setState(() {
       projectMode = value;
