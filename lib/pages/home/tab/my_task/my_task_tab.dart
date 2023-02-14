@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/models/project_model.dart';
+import 'widgets/list_card.dart';
+import '/models/to_do_date_model.dart';
+import '/util/ui/common_widget/calendar.dart';
+import '/constants/constants.dart';
 
 import '/base/base_state.dart';
-import '/constants/constants.dart';
-import '/models/task_model.dart';
 import '/pages/home/tab/my_task/my_task_vm.dart';
 import '/util/extension/widget_extension.dart';
-import '/util/ui/common_widget/calendar.dart';
+import '/models/task_model.dart';
 import 'my_task_provider.dart';
 import 'widgets/filter_button.dart';
-import 'widgets/list_card.dart';
-import 'widgets/to_day_switch.dart';
 
 class MyTaskTab extends StatefulWidget {
   final ScopedReader watch;
@@ -35,7 +35,7 @@ class MyTaskTab extends StatefulWidget {
 
 class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
   bool isToDay = true;
-  var isSelectedDay;
+  bool isFullMonth = true;
   taskDisplayStatus taskStatus = taskDisplayStatus.allTasks;
 
   @override
@@ -48,9 +48,9 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
       });
     });
 
-    getVm().bsIsSelectedDay.listen((value) {
+    getVm().bsFullMonth.listen((value) {
       setState(() {
-        isSelectedDay = value;
+        isFullMonth = value;
       });
     });
 
@@ -64,7 +64,6 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.kPrimaryBackground,
       body: buildBody(),
       appBar: buildAppBar(),
     );
@@ -84,8 +83,8 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
     );
   }
 
-  Widget buildMonth() => StreamBuilder<List<TaskModel>?>(
-      stream: getVm().bsListTask,
+  Widget buildMonth() => StreamBuilder<List<ToDoDateModel>>(
+      stream: getVm().bsToDoDate,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return AppStrings.somethingWentWrong.text12().tr().center();
@@ -95,13 +94,12 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
           return AppStrings.loading.text12().tr().center();
         }
 
-        List<TaskModel> data = snapshot.data!;
-
         return Calendar(
-          getListTask: getVm().setSelectedDay,
-          data: data,
-        ).pad(18, 18, 24, 0);
-      },);
+          isFullMonth: isFullMonth,
+          press: getVm().setFullMonth,
+          list: snapshot.data!,
+        );
+      });
 
   Widget buildToDaySwitch() => ToDaySwitch(
         isToDay: isToDay,
@@ -125,7 +123,7 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
           List<TaskModel> data = snapshot.data!;
 
           return ListCard(
-            data: getVm().getTaskListBySelectedDay(selectedDay: this.isSelectedDay, data: data),
+            data: data,
             status: taskStatus,
             mode: widget.mode,
           );
@@ -163,8 +161,6 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
       ],
     ).bAppBar();
   }
-
-
 
   @override
   MyTaskViewModel getVm() => widget.watch(viewModelProvider).state;
