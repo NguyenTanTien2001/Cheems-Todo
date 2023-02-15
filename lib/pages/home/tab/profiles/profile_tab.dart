@@ -54,7 +54,7 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
   void initQuickNoteState() {
     getVm().bsListQuickNote.listen((networkListQuickNote) {
       List<QuickNoteModel> listNote = networkListQuickNote!
-          // .where((quickNote) => quickNote.listNote.length == 0)
+          .where((quickNote) => quickNote.listNote.length == 0)
           .toList();
       // update quick note length
       if (noteLength != listNote.length) {
@@ -73,7 +73,7 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
       }
 
       List<QuickNoteModel> listCheckList = networkListQuickNote
-          // .where((quickNote) => quickNote.listNote.length > 0)
+          .where((quickNote) => quickNote.listNote.length > 0)
           .toList();
 
       // update check list length

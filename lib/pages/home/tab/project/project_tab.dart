@@ -6,7 +6,7 @@ import '/constants/constants.dart';
 import '/models/project_model.dart';
 import '/util/extension/dimens.dart';
 import '/util/extension/widget_extension.dart';
-// import '../../../../util/ui/common_widget/project_card.dart';
+import '../../../../util/ui/common_widget/project_card.dart';
 import 'project_provider.dart';
 import 'project_vm.dart';
 import 'widgets/add_project_button.dart';
@@ -66,31 +66,31 @@ class ProjectState extends BaseState<ProjectTab, ProjectViewModel> {
                 height: 27.w,
                 width: screenWidth,
               ),
-              // for (int i = 0; i < data.length; i++)
-              //   ProjectCard(
-              //       project: data[i],
-              //       press: widget.pressMode,
-              //       deletePress: (project) async => await showDialog(
-              //           context: this.context,
-              //           builder: (_) => CupertinoAlertDialog(
-              //                 title: Text(AppStrings.confirmDelete).tr(),
-              //                 actions: [
-              //                   CupertinoDialogAction(
-              //                       onPressed: () {
-              //                         Get.back();
-              //                       },
-              //                       child: Text(AppStrings.no).tr()),
-              //                   CupertinoDialogAction(
-              //                       onPressed: () => {
-              //                             getVm().deleteProject(project),
-              //                             Get.back()
-              //                           },
-              //                       child: Text(AppStrings.yes).tr())
-              //                 ],
-              //               ))),
-              // AddProjectButton(
-              //   press: getVm().addProject,
-              // )
+              for (int i = 0; i < data.length; i++)
+                ProjectCard(
+                    project: data[i],
+                    press: widget.pressMode,
+                    deletePress: (project) async => await showDialog(
+                        context: this.context,
+                        builder: (_) => CupertinoAlertDialog(
+                              title: Text(AppStrings.confirmDelete).tr(),
+                              actions: [
+                                CupertinoDialogAction(
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: Text(AppStrings.no).tr()),
+                                CupertinoDialogAction(
+                                    onPressed: () => {
+                                          getVm().deleteProject(project),
+                                          Get.back()
+                                        },
+                                    child: Text(AppStrings.yes).tr())
+                              ],
+                            ))),
+              AddProjectButton(
+                press: getVm().addProject,
+              )
             ],
           ).pad(0, 16);
         },
@@ -100,7 +100,8 @@ class ProjectState extends BaseState<ProjectTab, ProjectViewModel> {
 
   AppBar buildAppBar() => StringTranslateExtension(AppStrings.projects)
       .tr()
-      .plainAppBar(color: Colors.black)
+      .plainAppBar(
+          color: Colors.black)
       .backgroundColor(AppColors.kPrimaryBackground)
       .bAppBar();
 

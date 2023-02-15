@@ -2,10 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '/constants/app_colors.dart';
-// import '/pages/auth/forgot_password/forgot_password_vm.dart';
+import '/pages/auth/forgot_password/forgot_password_vm.dart';
 import '/pages/auth/sign_in/sign_in_vm.dart';
 import '/pages/auth/sign_up/sign_up_vm.dart';
-import '/pages/auth/forgot_password/forgot_password_vm.dart';
 import '../pages/auth/reset_password/reset_password_vm.dart';
 
 class AuthenticationService {
@@ -76,9 +75,8 @@ class AuthenticationService {
       await _firebaseAuth.sendPasswordResetEmail(
         email: email,
         actionCodeSettings: ActionCodeSettings(
-          url: 'https://todo6999.page.link',
+          url: 'https://CheemsTeams.page.link/ResetPass',
           androidPackageName: 'com.example.to_do_list',
-          dynamicLinkDomain: 'todo6999.page.link',
           androidInstallApp: true,
           handleCodeInApp: true,
         ),
@@ -87,6 +85,7 @@ class AuthenticationService {
       return ForgotPasswordStatus.successful;
     } on FirebaseAuthException catch (e) {
       print(e.code);
+      print(e.message);
       switch (e.code) {
         case 'invalid-email':
           servicesResultPrint('Invalid email');
@@ -107,7 +106,7 @@ class AuthenticationService {
     }
   }
 
-   Future<ResetPasswordStatus> changePassword(
+  Future<ResetPasswordStatus> changePassword(
       String code, String password) async {
     try {
       await _firebaseAuth.confirmPasswordReset(

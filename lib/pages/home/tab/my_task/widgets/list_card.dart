@@ -5,7 +5,7 @@ import '/models/task_model.dart';
 
 import '/constants/constants.dart';
 import '/util/extension/extension.dart';
-// import '/util/ui/common_widget/task_card.dart';
+import '/util/ui/common_widget/task_card.dart';
 
 class ListCard extends StatelessWidget {
   const ListCard(
@@ -63,11 +63,11 @@ class ListCard extends StatelessWidget {
                     .weight(FontWeight.w600)
                     .b()
                     .pad(20, 0, 24, 10),
-                // TaskCard(task: statusDataAndMode[i]),
+                TaskCard(task: statusDataAndMode[i]),
               ],
             )
-        // else
-        //   TaskCard(task: statusDataAndMode[i]),
+          else
+            TaskCard(task: statusDataAndMode[i]),
       ],
     );
   }
