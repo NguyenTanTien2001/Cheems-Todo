@@ -20,7 +20,7 @@ class MyNoteViewModel extends BaseViewModel {
 
   void checkedNote(QuickNoteModel quickNoteModel, int idNote) {
     // check note
-    // quickNoteModel.listNote[idNote].check = true;
+    quickNoteModel.listNote[idNote].check = true;
     // update note to network
     firestoreService.updateQuickNote(user!.uid, quickNoteModel);
   }

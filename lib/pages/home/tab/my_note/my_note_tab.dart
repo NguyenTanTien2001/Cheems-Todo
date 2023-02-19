@@ -7,7 +7,7 @@ import '/routing/app_routes.dart';
 import '/util/extension/dimens.dart';
 import '/util/extension/widget_extension.dart';
 import '../../../../models/project_model.dart';
-// import '../../../../util/ui/common_widget/quick_note_card.dart';
+import '../../../../util/ui/common_widget/quick_note_card.dart';
 import 'my_note_provider.dart';
 import 'my_note_vm.dart';
 
@@ -64,21 +64,21 @@ class MyNoteState extends BaseState<MyNoteTab, MyNoteViewModel> {
                   return Column(
                     children: [
                       if (data.length == 0) buildNoneNote(),
-                      // for (int i = 0; i < data.length; i++)
-                      //   isFullQuickNote == true ||
-                      //           (!isFullQuickNote &&
-                      //               data[i].isSuccessful == false)
-                      //       ? QuickNoteCard(
-                      //           note: data[i],
-                      //           color: AppColors.kColorNote[data[i].indexColor],
-                      //           successfulPress: () =>
-                      //               getVm().successfulQuickNote(data[i]),
-                      //           checkedPress: getVm().checkedNote,
-                      //           deletePress: () {
-                      //             getVm().deleteNote(data[i]);
-                      //           },
-                      //         )
-                      //       : SizedBox(),
+                      for (int i = 0; i < data.length; i++)
+                        isFullQuickNote == true ||
+                                (!isFullQuickNote &&
+                                    data[i].isSuccessful == false)
+                            ? QuickNoteCard(
+                                note: data[i],
+                                color: AppColors.kColorNote[data[i].indexColor],
+                                successfulPress: () =>
+                                    getVm().successfulQuickNote(data[i]),
+                                checkedPress: getVm().checkedNote,
+                                deletePress: () {
+                                  getVm().deleteNote(data[i]);
+                                },
+                              )
+                            : SizedBox(),
                     ],
                   );
                 }),

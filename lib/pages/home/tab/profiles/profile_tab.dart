@@ -49,6 +49,60 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
     super.initState();
     initUser();
   }
+
+  void initQuickNoteState() {
+    getVm().bsListQuickNote.listen((networkListQuickNote) {
+      List<QuickNoteModel> listNote = networkListQuickNote!
+          .where((quickNote) => quickNote.listNote.length == 0)
+          .toList();
+      // update quick note length
+      if (noteLength != listNote.length) {
+        setState(() {
+          noteLength = listNote.length;
+        });
+      }
+      // update quick note successful
+      var networkNoteSuccessfulLength = listNote
+          .where((QuickNoteModel note) => note.isSuccessful == true)
+          .length;
+      if (noteSuccessfulLength != networkNoteSuccessfulLength) {
+        setState(() {
+          noteSuccessfulLength = networkNoteSuccessfulLength;
+        });
+      }
+
+      List<QuickNoteModel> listCheckList = networkListQuickNote
+          .where((quickNote) => quickNote.listNote.length > 0)
+          .toList();
+
+      // update check list length
+      if (checkListLength != listCheckList.length) {
+        setState(() {
+          checkListLength = listCheckList.length;
+        });
+      }
+
+      // update quick note successful
+      var networkQuickNoteSuccessfulLength =
+          listCheckList.where((element) => element.isSuccessful).length;
+      if (checkListSuccessfulLength != networkQuickNoteSuccessfulLength) {
+        setState(() {
+          checkListSuccessfulLength = networkQuickNoteSuccessfulLength;
+        });
+      }
+    });
+
+    getVm().bsListTask.listen((value) {
+      if (value != null) {
+        setState(() {
+          taskSuccessfulLength =
+              value.where((element) => element.completed).toList().length;
+          taskLength = value.length;
+        });
+      }
+    });
+  }
+
   void initUser() {
     getVm().getUser().listen((networkUser) {
       // init local user
