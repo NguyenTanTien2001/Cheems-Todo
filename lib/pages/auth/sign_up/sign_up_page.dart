@@ -108,7 +108,7 @@ class SignUpState extends BaseState<SignUpPage, SignUpViewModel> {
               SizedBox(height: 32.w),
               AuthTextField(
                 controller: _emailController,
-                label: StringTranslateExtension(AppStrings.username).tr(),
+                label: StringTranslateExtension(AppStrings.email).tr(),
                 hint: StringTranslateExtension(AppStrings.usernameHint).tr(),
                 validator: (val) => val!.isNotEmpty
                     ? null

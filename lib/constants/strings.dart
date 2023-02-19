@@ -19,7 +19,7 @@ class AppStrings {
   /// [Sign In]
   static const String welcomeBack = 'welcome_back';
   static const String signInDes = 'sign_in_to_continue';
-  static const String username = 'username';
+  static const String email = 'email';
   static const String usernameHint = 'enter_your_username';
   static const String usernameValid = 'please_enter_a_email_address';
   static const String password = 'password';

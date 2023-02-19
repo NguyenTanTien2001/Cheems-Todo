@@ -93,7 +93,7 @@ class ForgotPasswordState
                 ),
                 AuthTextField(
                   controller: usernameController,
-                  label: AppStrings.username,
+                  label: AppStrings.email,
                   hint: AppStrings.usernameHint,
                   validator: (val) => val!.isNotEmpty
                       ? null

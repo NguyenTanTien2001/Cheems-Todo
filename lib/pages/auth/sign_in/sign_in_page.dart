@@ -118,7 +118,7 @@ class SignInState extends BaseState<SignInPage, SignInViewModel> {
               ),
               AuthTextField(
                 controller: emailController,
-                label: AppStrings.username,
+                label: AppStrings.email,
                 hint: AppStrings.usernameHint,
                 validator: (val) => val!.isNotEmpty
                     ? null
