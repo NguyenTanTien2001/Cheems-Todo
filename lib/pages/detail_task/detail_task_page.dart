@@ -115,8 +115,8 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
         buildDescription(task.description, task.desUrl),
         buildLine(),
         buildNote(task.id),
-        buildLine(),
-        buildListMember(task.listMember),
+        // buildLine(),
+        // buildListMember(task.listMember),
         buildLine(),
         buildTag(task.idProject),
         SizedBox(height: 32.w),
@@ -316,11 +316,11 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
         });
   }
 
-  Widget buildListMember(List<String> listId) => ListMember(
-        futureListMember: getVm().getAllUser(listId),
-        streamComment: getVm().bsComment,
-        getAllUser: getVm().getUser,
-      );
+  // Widget buildListMember(List<String> listId) => ListMember(
+  //       futureListMember: getVm().getAllUser(listId),
+  //       streamComment: getVm().bsComment,
+  //       getAllUser: getVm().getUser,
+  //     );
 
   Widget buildTag(String projectId) => StreamBuilder<ProjectModel>(
         stream: getVm().getProject(projectId),
