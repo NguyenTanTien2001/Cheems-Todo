@@ -1,33 +1,17 @@
-import 'package:table_calendar/table_calendar.dart';
+import 'package:equatable/equatable.dart';
 
-class ToDoDateModel {
-  //final DateTime day;
-  final String focusedDay;
-  final String selectedDay;
-  final CalendarFormat format;
+class ToDoDateModel extends Equatable {
+  final DateTime day;
+  bool isTask = false, isMonth;
+  ToDoDateModel({required this.day, this.isMonth = true});
 
-  ToDoDateModel(
-      {this.focusedDay = "", this.selectedDay = "",
-        this.format = CalendarFormat.month
-      });
-
-  // bool isTask = false, isMonth;
-  const ToDoDateModel.empty()
-      : this.focusedDay = "",
-        this.selectedDay = "",
-        this.format = CalendarFormat.month;
-
-  ToDoDateModel copyWith(
-      {String? focusedDay, String? selectedDay, CalendarFormat? format}) {
-    return ToDoDateModel(
-        focusedDay: focusedDay ?? this.focusedDay,
-        selectedDay: selectedDay ?? this.selectedDay,
-        format: format ?? this.format);
+  String toString() {
+    return this.day.toString() +
+        this.isTask.toString() +
+        this.isMonth.toString();
   }
 
-  // String toString() {
-  //   return this.day.toString() +
-  //       this.isTask.toString() +
-  //       this.isMonth.toString();
-  // }
+  @override
+  // TODO: implement props
+  List<Object?> get props => [day];
 }
