@@ -1,2 +1,2 @@
-# Cheems-Todo
-a todo app with task management
+# CheemsManager
+a Project managment app using Flutter and firebase
