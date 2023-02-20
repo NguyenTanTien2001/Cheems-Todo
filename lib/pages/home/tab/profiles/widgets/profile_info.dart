@@ -81,9 +81,9 @@ class _ProfileInfoState extends State<ProfileInfo> {
           ],
         ),
         buildChangeAvatar(),
-        buildLanguage(),
+        buildLanguage().pad(0, 0, 0, 20),
       ],
-    );
+    ).pad(10, 0, 0);
   }
 
   Widget buildLanguage() {
@@ -102,38 +102,76 @@ class _ProfileInfoState extends State<ProfileInfo> {
           ],
         ),
         SizedBox(height: 5.w),
-        Row(
-          children: [
-            'Vietnamese'
-                .plain()
-                .fSize(14)
-                .color(AppColors.grayText)
-                .weight(FontWeight.w400)
-                .b()
-                .pad(2, 5)
-                .inkTap(
-                  onTap: () async {
-                    await context.setLocale(Locale('vi', 'VN'));
-                    Get.updateLocale(Locale('vi', 'VN'));
-                  },
-                  borderRadius: BorderRadius.circular(5),
-                ),
-            SizedBox(width: 20.w),
-            'English'
-                .plain()
-                .fSize(14)
-                .weight(FontWeight.w500)
-                .b()
-                .pad(2, 5)
-                .inkTap(
-                  onTap: () async {
-                    await context.setLocale(Locale('en', 'US'));
-                    Get.updateLocale(Locale('en', 'US'));
-                  },
-                  borderRadius: BorderRadius.circular(5),
-                ),
-          ],
-        ).pad(10, 0, 0),
+        if (Get.locale.toString() == 'vi_VN')
+          Row(
+            children: [
+              'Tiếng Việt'
+                  .plain()
+                  .fSize(14)
+                  .weight(FontWeight.w500)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('vi', 'VN'));
+                      Get.updateLocale(Locale('vi', 'VN'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+              SizedBox(width: 20.w),
+              'English'
+                  .plain()
+                  .fSize(14)
+                  .color(AppColors.grayText)
+                  .weight(FontWeight.w400)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('en', 'US'));
+                      Get.updateLocale(Locale('en', 'US'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+            ],
+          ).pad(10, 0, 0)
+        else
+          Row(
+            children: [
+              'Tiếng Việt'
+                  .plain()
+                  .fSize(14)
+                  .color(AppColors.grayText)
+                  .weight(FontWeight.w400)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('vi', 'VN'));
+                      Get.updateLocale(Locale('vi', 'VN'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+              SizedBox(width: 20.w),
+              'English'
+                  .plain()
+                  .fSize(14)
+                  .weight(FontWeight.w500)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('en', 'US'));
+                      Get.updateLocale(Locale('en', 'US'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+            ],
+          ).pad(10, 0, 0),
       ],
     );
   }
