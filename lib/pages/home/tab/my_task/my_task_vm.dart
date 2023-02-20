@@ -1,4 +1,3 @@
-
 import '/base/base_view_model.dart';
 import '/models/task_model.dart';
 
@@ -27,7 +26,7 @@ class MyTaskViewModel extends BaseViewModel {
             //setTaskDate(task);
           }
         }
-        listData.sort((a, b) => a.startDate.compareTo(b.startDate));
+        listData.sort((a, b) => b.startDate.compareTo(a.startDate));
         bsListTask.add(listData);
       });
     }
@@ -81,15 +80,16 @@ class MyTaskViewModel extends BaseViewModel {
     bsTaskDisplayStatus.add(status);
   }
 
-
-  List<TaskModel> getTaskListBySelectedDay({DateTime? selectedDay, required List<TaskModel> data}){
-    if(selectedDay == null)  return data;
+  List<TaskModel> getTaskListBySelectedDay(
+      {DateTime? selectedDay, required List<TaskModel> data}) {
+    if (selectedDay == null) return data;
 
     List<TaskModel> dataTemp = [];
     data.forEach((element) {
       var dayElement = element.startDate;
-      if(dayElement.year == selectedDay.year && dayElement.month == selectedDay.month && dayElement.day == selectedDay.day)
-        dataTemp.add(element);
+      if (dayElement.year == selectedDay.year &&
+          dayElement.month == selectedDay.month &&
+          dayElement.day == selectedDay.day) dataTemp.add(element);
     });
 
     return dataTemp;
