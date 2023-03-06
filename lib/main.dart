@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'app/app.dart';
 import 'base/base_state.dart';
 
@@ -22,6 +23,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  //init Hive
+  await Hive.initFlutter();
+
+  //open a box
+  var quickNoteBox = await Hive.openBox('quick_note');
+  var projectBox = await Hive.openBox('project');
+  var taskBox = await Hive.openBox('task');
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(MyApp());

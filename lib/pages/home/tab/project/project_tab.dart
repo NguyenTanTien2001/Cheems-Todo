@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import '/base/base_state.dart';
 import '/constants/constants.dart';
@@ -45,18 +46,10 @@ class ProjectState extends BaseState<ProjectTab, ProjectViewModel> {
 
   Widget buildBody() {
     return SingleChildScrollView(
-      child: StreamBuilder<List<ProjectModel>?>(
-        stream: getVm().bsProject,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return AppStrings.somethingWentWrong.text12().tr().center();
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return AppStrings.loading.text12().tr().center();
-          }
-
-          List<ProjectModel> data = snapshot.data!;
+      child: ValueListenableBuilder(
+        valueListenable: Hive.box('project').listenable(),
+        builder: (context, box, Widget) {
+          List<ProjectModel> data = getVm().LocalProjects(box as Box);
 
           return Wrap(
             spacing: 12.w,
@@ -100,8 +93,7 @@ class ProjectState extends BaseState<ProjectTab, ProjectViewModel> {
 
   AppBar buildAppBar() => StringTranslateExtension(AppStrings.projects)
       .tr()
-      .plainAppBar(
-          color: Colors.black)
+      .plainAppBar(color: Colors.black)
       .backgroundColor(AppColors.kPrimaryBackground)
       .bAppBar();
 

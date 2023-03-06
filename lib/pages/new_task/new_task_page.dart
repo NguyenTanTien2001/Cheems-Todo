@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 import '/models/task_model.dart';
 import 'widgets/due_date_form.dart';
@@ -122,18 +123,10 @@ class NewTaskState extends BaseState<NewTaskPage, NewTaskViewModel> {
   }
 
   Widget buildInForm() {
-    return StreamBuilder<List<ProjectModel>?>(
-      stream: getVm().bsListProject,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return AppStrings.somethingWentWrong.text12().tr().center();
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppStrings.loading.text12().tr().center();
-        }
-
-        List<ProjectModel> data = snapshot.data!;
+    return ValueListenableBuilder(
+      valueListenable: Hive.box('project').listenable(),
+      builder: (context, box, Widget) {
+        List<ProjectModel> data = getVm().getLocalProjects(box as Box);
         return InForm(
           value: dropValue,
           listValue: data,
@@ -188,9 +181,9 @@ class NewTaskState extends BaseState<NewTaskPage, NewTaskViewModel> {
     });
   }
 
-  Widget buildMemberForm() {
-    return MemberForm(listUser: selectUsers, press: selectListUser);
-  }
+  // Widget buildMemberForm() {
+  //   return MemberForm(listUser: selectUsers, press: selectListUser);
+  // }
 
   void addTaskClick() async {
     List<String> list = [];
@@ -209,12 +202,10 @@ class NewTaskState extends BaseState<NewTaskPage, NewTaskViewModel> {
           dueDateValue!.day, dueTimeValue!.hour, dueTimeValue!.minute);
       TaskModel task = new TaskModel(
         idProject: dropValue!.id,
-        idAuthor: getVm().user!.uid,
         title: titleController.text,
         description: descriptionController.text,
         startDate: DateTime.now(),
         dueDate: dueDateValue!,
-        listMember: list,
       );
       String taskId = await getVm().newTask(task, dropValue!, listToken);
       if (pickerFile != null) getVm().uploadDesTask(taskId, pickerFile!.path);

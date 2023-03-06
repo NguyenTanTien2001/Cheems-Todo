@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 import '/models/task_model.dart';
 import 'widgets/due_date_form.dart';
@@ -100,25 +101,15 @@ class EditTaskState extends BaseState<EditTaskPage, EditTaskViewModel> {
           child: Form(
             key: formKey,
             child: SingleChildScrollView(
-              child: StreamBuilder<TaskModel?>(
-                  stream: getVm().bsTask,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return AppStrings.somethingWentWrong
-                          .text12()
-                          .tr()
-                          .center();
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return AppStrings.loading.text12().tr().center();
-                    }
-                    TaskModel task = snapshot.data!;
+              child: ValueListenableBuilder(
+                  valueListenable: Hive.box('task').listenable(),
+                  builder: (context, box, Widget) {
+                    TaskModel task =
+                        getVm().LocalTasks(box as Box, Get.arguments);
                     titleController.text = task.title;
                     descriptionController.text = task.description;
                     dueDateValue = task.dueDate;
                     dueTimeValue = TimeOfDay.fromDateTime(task.dueDate);
-                    oldMemberList = task.listMember;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -150,18 +141,10 @@ class EditTaskState extends BaseState<EditTaskPage, EditTaskViewModel> {
   }
 
   Widget buildInForm(TaskModel task) {
-    return StreamBuilder<List<ProjectModel>?>(
-      stream: getVm().bsListProject,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return AppStrings.somethingWentWrong.text12().tr().center();
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppStrings.loading.text12().tr().center();
-        }
-
-        List<ProjectModel> data = snapshot.data!;
+    return ValueListenableBuilder(
+      valueListenable: Hive.box('project').listenable(),
+      builder: (context, box, Widget) {
+        List<ProjectModel> data = getVm().getLocalProjects(box as Box);
         if (this.oldProject == null) {
           var taskdropValue =
               data.where((element) => element.id == task.idProject);
@@ -246,10 +229,6 @@ class EditTaskState extends BaseState<EditTaskPage, EditTaskViewModel> {
   void editTaskClick(TaskModel oldtask) async {
     List<String> list = [];
 
-    for (var user in selectUsers!) {
-      list.add(user.uid);
-    }
-
     if (formKey.currentState!.validate() &&
         dropValue != null &&
         dueDateValue != null &&
@@ -259,16 +238,12 @@ class EditTaskState extends BaseState<EditTaskPage, EditTaskViewModel> {
       TaskModel task = new TaskModel(
         id: oldtask.id,
         idProject: dropValue!.id,
-        idAuthor: getVm().user!.uid,
         title: titleController.text,
         description: descriptionController.text,
         startDate: DateTime.now(),
         dueDate: dueDateValue!,
-        listMember: list,
       );
-      String taskId =
-          await getVm().editTask(task, oldProject!, dropValue!, oldMemberList!);
-      if (pickerFile != null) getVm().uploadDesTask(taskId, pickerFile!.path);
+      String taskId = await getVm().editTask(task);
       Get.back();
     }
   }

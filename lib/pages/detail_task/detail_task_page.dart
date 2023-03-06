@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:to_do_list/models/quick_note_model.dart';
 import 'package:to_do_list/routing/app_routes.dart';
@@ -67,35 +68,28 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
   @override
   void initState() {
     super.initState();
-    getVm().loadTask(Get.arguments);
-    getVm().loadNote(Get.arguments);
-    getVm().loadComment(Get.arguments);
+    // getVm().loadTask(Get.arguments);
+    // getVm().loadNote(Get.arguments);
+    // getVm().loadComment(Get.arguments);
     taskId = Get.arguments;
-    getVm().bsShowComment.listen((value) {
-      setState(() {
-        showComment = value;
-      });
-    });
+    // getVm().bsShowComment.listen((value) {
+    //   setState(() {
+    //     showComment = value;
+    //   });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (getVm().user == null) return BackToLogin();
+    // if (getVm().user == null) return BackToLogin();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: buildAppbar(),
       body: SingleChildScrollView(
-        child: StreamBuilder<TaskModel?>(
-          stream: getVm().bsTask,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return AppStrings.somethingWentWrong.text12().tr().center();
-            }
-
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return AppStrings.loading.text12().tr().center();
-            }
-            TaskModel task = snapshot.data!;
+        child: ValueListenableBuilder(
+          valueListenable: Hive.box('task').listenable(),
+          builder: (context, box, Widget) {
+            TaskModel task = getVm().LocalTasks(box as Box, Get.arguments);
             return buildBody(task);
           },
         ),
@@ -108,27 +102,27 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
       children: [
         buildTitle(task.title),
         SizedBox(height: 24),
-        buildAssigned(task.idAuthor),
+        // buildAssigned(''),
         buildLine(),
         buildDueDate(task.dueDate),
         buildLine(),
         buildDescription(task.description, task.desUrl),
-        buildLine(),
-        buildNote(task.id),
+        // buildLine(),
+        // buildNote(task.id),
         // buildLine(),
         // buildListMember(task.listMember),
         buildLine(),
         buildTag(task.idProject),
         SizedBox(height: 32.w),
-        showComment ? buildCommentForm() : SizedBox(),
-        showComment ? buildListComment() : SizedBox(),
+        // showComment ? buildCommentForm() : SizedBox(),
+        // showComment ? buildListComment() : SizedBox(),
         buildCompletedButton(
           task.completed,
           press: () => getVm().completedTask(task.id),
         ),
-        SizedBox(height: 15.w),
-        buildCommentButton(),
-        SizedBox(height: 35.w),
+        // SizedBox(height: 15.w),
+        // buildCommentButton(),
+        // SizedBox(height: 35.w),
       ],
     ).pad(0, 24);
   }
@@ -141,23 +135,23 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
       .b()
       .align(Alignment.topLeft);
 
-  Widget buildAssigned(String id) {
-    return StreamBuilder<MetaUserModel>(
-      stream: getVm().streamUser(id),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return AppStrings.somethingWentWrong.text12().tr().center();
-        }
+  // Widget buildAssigned(String id) {
+  //   return StreamBuilder<MetaUserModel>(
+  //     stream: getVm().streamUser(id),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.hasError) {
+  //         return AppStrings.somethingWentWrong.text12().tr().center();
+  //       }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppStrings.loading.text12().tr().center();
-        }
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return AppStrings.loading.text12().tr().center();
+  //       }
 
-        MetaUserModel user = snapshot.data!;
-        return Assigned(user: user);
-      },
-    );
-  }
+  //       MetaUserModel user = snapshot.data!;
+  //       return Assigned(user: user);
+  //     },
+  //   );
+  // }
 
   Widget buildLine() => Container(
         color: AppColors.kLineColor,
@@ -172,74 +166,74 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
         url: url,
       );
 
-  Widget buildNote(String taskId) {
-    return Container(
-      color: AppColors.kWhiteBackground,
-      //height: screenHeight,
-      width: screenWidth,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              SizedBox(width: 15.w),
-              SizedBox(
-                width: 18,
-                height: 18,
-                child: SvgPicture.asset(
-                  AppImages.quickIcon,
-                ),
-              ),
-              SizedBox(width: 23.w),
-              Expanded(
-                child: AppStrings.quickNotes
-                    .plain()
-                    .fSize(16)
-                    .color(AppColors.kGrayTextA)
-                    .b()
-                    .tr(),
-              ),
-              ButtonTheme(
-                minWidth: 18,
-                height: 18,
-                child: IconButton(
-                    onPressed: () => addNewnote(taskId), icon: Icon(Icons.add)),
-              ),
-              SizedBox(width: 15.w)
-            ]),
-            SizedBox(height: 32.w),
-            StreamBuilder<List<QuickNoteModel>?>(
-                stream: getVm().bsListQuickNote,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Something went wrong');
-                  }
+  // Widget buildNote(String taskId) {
+  //   return Container(
+  //     color: AppColors.kWhiteBackground,
+  //     //height: screenHeight,
+  //     width: screenWidth,
+  //     child: SingleChildScrollView(
+  //       child: Column(
+  //         children: [
+  //           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  //             SizedBox(width: 15.w),
+  //             SizedBox(
+  //               width: 18,
+  //               height: 18,
+  //               child: SvgPicture.asset(
+  //                 AppImages.quickIcon,
+  //               ),
+  //             ),
+  //             SizedBox(width: 23.w),
+  //             Expanded(
+  //               child: AppStrings.quickNotes
+  //                   .plain()
+  //                   .fSize(16)
+  //                   .color(AppColors.kGrayTextA)
+  //                   .b()
+  //                   .tr(),
+  //             ),
+  //             ButtonTheme(
+  //               minWidth: 18,
+  //               height: 18,
+  //               child: IconButton(
+  //                   onPressed: () => addNewnote(taskId), icon: Icon(Icons.add)),
+  //             ),
+  //             SizedBox(width: 15.w)
+  //           ]),
+  //           SizedBox(height: 32.w),
+  //           StreamBuilder<List<QuickNoteModel>?>(
+  //               stream: getVm().bsListQuickNote,
+  //               builder: (context, snapshot) {
+  //                 if (snapshot.hasError) {
+  //                   return Text('Something went wrong');
+  //                 }
 
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
-                  }
+  //                 if (snapshot.connectionState == ConnectionState.waiting) {
+  //                   return Text("Loading");
+  //                 }
 
-                  List<QuickNoteModel> data = snapshot.data!;
-                  return Column(
-                    children: [
-                      for (int i = 0; i < data.length; i++)
-                        QuickNoteCard(
-                          note: data[i],
-                          color: AppColors.kColorNote[data[i].indexColor],
-                          successfulPress: () =>
-                              getVm().successfultaskNote(data[i]),
-                          checkedPress: getVm().checkedNote,
-                          deletePress: () {
-                            getVm().deleteNote(data[i]);
-                          },
-                        )
-                    ],
-                  );
-                }),
-          ],
-        ),
-      ),
-    );
-  }
+  //                 List<QuickNoteModel> data = snapshot.data!;
+  //                 return Column(
+  //                   children: [
+  //                     for (int i = 0; i < data.length; i++)
+  //                       QuickNoteCard(
+  //                         note: data[i],
+  //                         color: AppColors.kColorNote[data[i].indexColor],
+  //                         successfulPress: () =>
+  //                             getVm().successfultaskNote(data[i]),
+  //                         checkedPress: getVm().checkedNote,
+  //                         deletePress: () {
+  //                           getVm().deleteNote(data[i]);
+  //                         },
+  //                       )
+  //                   ],
+  //                 );
+  //               }),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget buildNoneNote() =>
       'You are not have a note, create a note to continue'.desc().inkTap(
@@ -250,71 +244,71 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
 
   AppBar appBar() => AppBar();
 
-  void addNewnote(String taskId) async {
-    await showDialog(
-        context: this.context,
-        builder: (context) {
-          return Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 228.w,
-              height: 88.w,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(5.r),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 44.w,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: AppStrings.addQuickNote
-                              .plain()
-                              .fSize(17)
-                              .lines(1)
-                              .b()
-                              .tr(),
-                        ),
-                      ],
-                    ),
-                  ).pad(0, 16).inkTap(
-                        onTap: () {
-                          Get.offAndToNamed(AppRoutes.NEW_NOTE,
-                              arguments: taskId);
-                        },
-                        borderRadius: BorderRadius.circular(5.r),
-                      ),
-                  Container(
-                    height: 44.w,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: AppStrings.addCheckList
-                              .plain()
-                              .fSize(17)
-                              .lines(1)
-                              .b()
-                              .tr(),
-                        ),
-                      ],
-                    ),
-                  ).pad(0, 16).inkTap(
-                        onTap: () {
-                          Get.offAndToNamed(AppRoutes.NEW_CHECK_LIST,
-                              arguments: taskId);
-                        },
-                        borderRadius: BorderRadius.circular(5.r),
-                      )
-                ],
-              ),
-            ),
-          ).pad(0, 14, appBar().preferredSize.height, 0);
-        });
-  }
+  // void addNewnote(String taskId) async {
+  //   await showDialog(
+  //       context: this.context,
+  //       builder: (context) {
+  //         return Align(
+  //           alignment: Alignment.center,
+  //           child: Container(
+  //             width: 228.w,
+  //             height: 88.w,
+  //             decoration: BoxDecoration(
+  //               color: Colors.white,
+  //               borderRadius: BorderRadius.circular(5.r),
+  //             ),
+  //             child: Column(
+  //               children: [
+  //                 Container(
+  //                   height: 44.w,
+  //                   child: Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                     children: [
+  //                       Flexible(
+  //                         child: AppStrings.addQuickNote
+  //                             .plain()
+  //                             .fSize(17)
+  //                             .lines(1)
+  //                             .b()
+  //                             .tr(),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ).pad(0, 16).inkTap(
+  //                       onTap: () {
+  //                         Get.offAndToNamed(AppRoutes.NEW_NOTE,
+  //                             arguments: taskId);
+  //                       },
+  //                       borderRadius: BorderRadius.circular(5.r),
+  //                     ),
+  //                 Container(
+  //                   height: 44.w,
+  //                   child: Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                     children: [
+  //                       Flexible(
+  //                         child: AppStrings.addCheckList
+  //                             .plain()
+  //                             .fSize(17)
+  //                             .lines(1)
+  //                             .b()
+  //                             .tr(),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ).pad(0, 16).inkTap(
+  //                       onTap: () {
+  //                         Get.offAndToNamed(AppRoutes.NEW_CHECK_LIST,
+  //                             arguments: taskId);
+  //                       },
+  //                       borderRadius: BorderRadius.circular(5.r),
+  //                     )
+  //               ],
+  //             ),
+  //           ),
+  //         ).pad(0, 14, appBar().preferredSize.height, 0);
+  //       });
+  // }
 
   // Widget buildListMember(List<String> listId) => ListMember(
   //       futureListMember: getVm().getAllUser(listId),
@@ -322,17 +316,11 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
   //       getAllUser: getVm().getUser,
   //     );
 
-  Widget buildTag(String projectId) => StreamBuilder<ProjectModel>(
-        stream: getVm().getProject(projectId),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return AppStrings.somethingWentWrong.text12().tr().center();
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return AppStrings.loading.text12().tr().center();
-          }
-          ProjectModel project = snapshot.data!;
+  Widget buildTag(String projectId) => ValueListenableBuilder(
+        valueListenable: Hive.box('project').listenable(),
+        builder: (context, box, Widget) {
+          ProjectModel project =
+              getVm().getLocalProjectById(box as Box, projectId);
           return Tag(project: project);
         },
       );
@@ -381,28 +369,28 @@ class DetailTaskState extends BaseState<DetailTaskPage, DetailTaskViewModel> {
         ),
       );
 
-  Widget buildListComment() => StreamBuilder<List<CommentModel>?>(
-        stream: getVm().bsComment,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return AppStrings.somethingWentWrong.text12().tr().center();
-          }
+  // Widget buildListComment() => StreamBuilder<List<CommentModel>?>(
+  //       stream: getVm().bsComment,
+  //       builder: (context, snapshot) {
+  //         if (snapshot.hasError) {
+  //           return AppStrings.somethingWentWrong.text12().tr().center();
+  //         }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return AppStrings.loading.text12().tr().center();
-          }
-          List<CommentModel> data = snapshot.data!;
-          return ListComment(
-            data: data,
-            getUser: getVm().getUser,
-          );
-        },
-      );
+  //         if (snapshot.connectionState == ConnectionState.waiting) {
+  //           return AppStrings.loading.text12().tr().center();
+  //         }
+  //         List<CommentModel> data = snapshot.data!;
+  //         return ListComment(
+  //           data: data,
+  //           getUser: getVm().getUser,
+  //         );
+  //       },
+  //     );
 
-  Widget buildCommentButton() => CommentButton(
-        showComment: showComment,
-        press: () => getVm().setShowComment(!showComment),
-      );
+  // Widget buildCommentButton() => CommentButton(
+  //       showComment: showComment,
+  //       press: () => getVm().setShowComment(!showComment),
+  //     );
 
   AppBar buildAppbar() => ''
           .plainAppBar()

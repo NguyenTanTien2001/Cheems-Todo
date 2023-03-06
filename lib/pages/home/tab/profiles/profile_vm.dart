@@ -16,17 +16,11 @@ class ProfileViewModel extends BaseViewModel {
   ProfileViewModel(ref) : super(ref) {
     if (user != null)
       firestoreService.quickNoteStream(user!.uid).listen((event) {
-        bsListQuickNote.add(event);
+        bsListQuickNote.add([]);
       });
 
-    firestoreService.taskStream().listen((event) {
-      List<TaskModel> listAllData = event;
-      List<TaskModel> listData = [];
-      for (var task in listAllData) {
-        if (task.idAuthor == user!.uid || task.listMember.contains(user!.uid)) {
-          listData.add(task);
-        }
-      }
+    firestoreService.localTaskStream().listen((event) {
+      List<TaskModel> listData = event;
       listData.sort((a, b) => a.dueDate.compareTo(b.dueDate));
       bsListTask.add(listData);
     });

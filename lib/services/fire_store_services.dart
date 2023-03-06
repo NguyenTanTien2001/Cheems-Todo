@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:localstore/localstore.dart';
 import '/models/quick_note_model.dart';
 import 'package:to_do_list/models/meta_user_model.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/comment_model.dart';
 import '/constants/app_colors.dart';
@@ -11,6 +16,12 @@ import '/models/task_model.dart';
 class FirestoreService {
   final FirebaseFirestore _firebaseFirestore;
   FirestoreService(this._firebaseFirestore);
+
+  // reference the hive box
+
+  // Local Storage
+  final _db = Localstore.instance;
+  final uuid = Uuid();
 
   Stream<List<ProjectModel>> projectStream(String uid) {
     return _firebaseFirestore
@@ -30,6 +41,22 @@ class FirestoreService {
             return TaskModel.fromFirestore(doc);
           }).toList(),
         );
+  }
+
+  Stream<List<TaskModel>> localTaskStream() {
+    final taskBox = Hive.box('task');
+    List<TaskModel> data = [];
+
+    // box.toMap().forEach((key, value) {
+    //   box.delete(key);
+    // });
+
+    taskBox.toMap().forEach((key, value) {
+      data.add(TaskModel.fromJson(jsonDecode(value.toString())));
+    });
+
+    return Stream.fromFuture(Future.value(data));
+    ;
   }
 
   Stream<List<CommentModel>> commentStream(String taskId) {
@@ -75,6 +102,18 @@ class FirestoreService {
         .doc(id)
         .get()
         .then((doc) => ProjectModel.fromFirestore(doc));
+  }
+
+  Future<ProjectModel> getLocalProjectById(String id) {
+    final projectBox = Hive.box('project');
+    List<ProjectModel> data = [];
+
+    projectBox.toMap().forEach((key, value) {
+      final temp = ProjectModel.fromJson(jsonDecode(value.toString()));
+      if (temp.id == id) data.add(temp);
+    });
+
+    return Future.value(data.first);
   }
 
   Stream<ProjectModel> projectStreamById(String id) {
@@ -126,8 +165,32 @@ class FirestoreService {
     return false;
   }
 
+  Future<bool> LocalDeleteQuickNote(String id) async {
+    final quickNoteBox = Hive.box('quick_note');
+    quickNoteBox.toMap().forEach((key, value) {
+      var temp = QuickNoteModel.fromJson(jsonDecode(value));
+      if (temp.id == id) {
+        quickNoteBox.delete(key);
+        return;
+      }
+    });
+    return true;
+  }
+
   void addProject(ProjectModel project) {
     _firebaseFirestore.collection('project').doc().set(project.toFirestore());
+  }
+
+  void LocalAddProject(ProjectModel project) {
+    final projectBox = Hive.box('project');
+    project.id = uuid.v1();
+    projectBox.add(project.toJson());
+
+    // projectBox.toMap().forEach((key, value) {
+    //   projectBox.delete(key);
+    // });
+
+    print(project.toJson());
   }
 
   void deleteProject(ProjectModel project) {
@@ -139,6 +202,17 @@ class FirestoreService {
       servicesResultPrint("Project Deleted");
     }).catchError((error) {
       servicesResultPrint("Failed to delete project: $error");
+    });
+  }
+
+  void localDeleteProject(ProjectModel project) {
+    final projectBox = Hive.box('project');
+    projectBox.toMap().forEach((key, value) {
+      var temp = ProjectModel.fromJson(jsonDecode(value));
+      if (temp.id == project.id) {
+        projectBox.delete(key);
+        return;
+      }
     });
   }
 
@@ -154,6 +228,22 @@ class FirestoreService {
     }).catchError((error) {
       servicesResultPrint('Add task to project failed: $error');
       return false;
+    });
+    return true;
+  }
+
+  Future<bool> localAddTaskProject(
+      ProjectModel projectModel, String taskID) async {
+    List<String> list = projectModel.listTask;
+    projectModel.listTask.add(taskID);
+
+    final projectBox = Hive.box('project');
+    projectBox.toMap().forEach((key, value) {
+      var temp = QuickNoteModel.fromJson(jsonDecode(value));
+      if (temp.id == projectModel.id) {
+        projectBox.put(key, projectModel.toJson());
+        return;
+      }
     });
     return true;
   }
@@ -175,6 +265,21 @@ class FirestoreService {
     return true;
   }
 
+  Future<bool> localDeleteTaskProject(
+      ProjectModel projectModel, String taskID) async {
+    projectModel.listTask.remove(taskID);
+
+    final projectBox = Hive.box('project');
+    projectBox.toMap().forEach((key, value) {
+      var temp = ProjectModel.fromJson(jsonDecode(value));
+      if (temp.id == projectModel.id) {
+        projectBox.put(key, projectModel.toJson());
+        return;
+      }
+    });
+    return true;
+  }
+
   Future<void> completedTaskById(String id) async {
     await _firebaseFirestore
         .collection('task')
@@ -183,6 +288,18 @@ class FirestoreService {
       servicesResultPrint('Completed Task');
     }).catchError((error) {
       servicesResultPrint('Completed Task failed: $error');
+    });
+  }
+
+  Future<void> localCompletedTaskById(String id) async {
+    final taskBox = Hive.box('task');
+    taskBox.toMap().forEach((key, value) {
+      var temp = TaskModel.fromJson(jsonDecode(value));
+      if (temp.id == id) {
+        temp.completed = true;
+        taskBox.put(key, temp.toJson());
+        return;
+      }
     });
   }
 
@@ -239,6 +356,15 @@ class FirestoreService {
     return doc.id;
   }
 
+  Future<String> localAddTask(TaskModel task) async {
+    final taskBox = Hive.box('task');
+    task.id = uuid.v1();
+    taskBox.add(task.toJson());
+    print(taskBox.toMap());
+
+    return Future.value(task.id);
+  }
+
   Future<String> addComment(CommentModel comment, String taskId) async {
     DocumentReference doc = _firebaseFirestore
         .collection('task')
@@ -264,6 +390,18 @@ class FirestoreService {
     return false;
   }
 
+  Future<bool> localDeleteTask(String id) async {
+    final taskBox = Hive.box('task');
+    taskBox.toMap().forEach((key, value) {
+      var temp = TaskModel.fromJson(jsonDecode(value));
+      if (temp.id == id) {
+        taskBox.delete(key);
+        return;
+      }
+    });
+    return true;
+  }
+
   Future<bool> updateTask(TaskModel task) async {
     await _firebaseFirestore
         .collection('task')
@@ -277,6 +415,18 @@ class FirestoreService {
       return false;
     });
     return false;
+  }
+
+  Future<bool> localUpdateTask(TaskModel task) async {
+    final taskBox = Hive.box('task');
+    taskBox.toMap().forEach((key, value) {
+      var temp = TaskModel.fromJson(jsonDecode(value));
+      if (temp.id == task.id) {
+        taskBox.put(key, task.toJson());
+        return;
+      }
+    });
+    return true;
   }
 
   void servicesResultPrint(String result, {bool isToast = true}) async {
@@ -305,6 +455,17 @@ class FirestoreService {
         );
   }
 
+  Stream<List<QuickNoteModel>> LocalQuickNoteStream() {
+    final quickNoteBox = Hive.box('quick_note');
+    print(quickNoteBox.toMap().values);
+    List<QuickNoteModel> data = [];
+    quickNoteBox.toMap().forEach((key, value) {
+      data.add(QuickNoteModel.fromJson(jsonDecode(value.toString())));
+    });
+
+    return Stream.fromFuture(Future.value(data));
+  }
+
   Future<bool> addQuickNote(String uid, QuickNoteModel quickNote) async {
     await _firebaseFirestore
         .collection('user')
@@ -323,6 +484,19 @@ class FirestoreService {
     return false;
   }
 
+  Future<bool> localAddQuickNote(QuickNoteModel quickNote) async {
+    final quickNoteBox = Hive.box('quick_note');
+    quickNote.id = uuid.v1();
+    quickNoteBox.add(jsonEncode(quickNote));
+    print(quickNoteBox.toMap());
+
+    // quickNoteBox.toMap().forEach((key, value) {
+    //   quickNoteBox.delete(key);
+    // });
+
+    return true;
+  }
+
   Future<bool> updateQuickNote(
       String uid, QuickNoteModel quickNoteModel) async {
     await _firebaseFirestore
@@ -339,6 +513,18 @@ class FirestoreService {
       return false;
     });
     return false;
+  }
+
+  Future<bool> LocalUpdateQuickNote(QuickNoteModel quickNoteModel) async {
+    final quickNoteBox = Hive.box('quick_note');
+    quickNoteBox.toMap().forEach((key, value) {
+      var temp = QuickNoteModel.fromJson(jsonDecode(value));
+      if (temp.id == quickNoteModel.id) {
+        quickNoteBox.put(key, jsonEncode(quickNoteModel));
+        return;
+      }
+    });
+    return true;
   }
 
   Stream<List<QuickNoteModel>> taskNoteStream(String uid) {

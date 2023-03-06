@@ -46,41 +46,41 @@ class _ProfileInfoState extends State<ProfileInfo> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomAvatarLoadingImage(
-                    url: widget.user.photoURL ?? '', imageSize: 64)
-                .pad(23, 10, 24),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  widget.user.displayName
-                      .toString()
-                      .plain()
-                      .fSize(18)
-                      .lHeight(21.09)
-                      .weight(FontWeight.w600)
-                      .lines(1)
-                      .overflow(TextOverflow.ellipsis)
-                      .b(),
-                  widget.user.email
-                      .toString()
-                      .plain()
-                      .fSize(16)
-                      .lHeight(19.7)
-                      .color(AppColors.kGrayTextB)
-                      .lines(1)
-                      .overflow(TextOverflow.ellipsis)
-                      .b(),
-                ],
-              ).pad(0, 0, 35),
-            ),
-            buildSignOut().pad(0, 35, 25),
-          ],
-        ),
-        buildChangeAvatar(),
+        // Row(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: [
+        //     CustomAvatarLoadingImage(
+        //             url: widget.user.photoURL ?? '', imageSize: 64)
+        //         .pad(23, 10, 24),
+        //     Expanded(
+        //       child: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           widget.user.displayName
+        //               .toString()
+        //               .plain()
+        //               .fSize(18)
+        //               .lHeight(21.09)
+        //               .weight(FontWeight.w600)
+        //               .lines(1)
+        //               .overflow(TextOverflow.ellipsis)
+        //               .b(),
+        //           widget.user.email
+        //               .toString()
+        //               .plain()
+        //               .fSize(16)
+        //               .lHeight(19.7)
+        //               .color(AppColors.kGrayTextB)
+        //               .lines(1)
+        //               .overflow(TextOverflow.ellipsis)
+        //               .b(),
+        //         ],
+        //       ).pad(0, 0, 35),
+        //     ),
+        //     buildSignOut().pad(0, 35, 25),
+        //   ],
+        // ),
+        // buildChangeAvatar(),
         buildLanguage().pad(0, 0, 0, 20),
       ],
     ).pad(10, 0, 0);

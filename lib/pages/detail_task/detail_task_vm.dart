@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:hive_flutter/adapters.dart';
+
 import '../../models/quick_note_model.dart';
 import '/models/comment_model.dart';
 import '/models/project_model.dart';
@@ -53,49 +57,56 @@ class DetailTaskViewModel extends BaseViewModel {
     });
   }
 
-  Stream<MetaUserModel> streamUser(String id) {
-    return firestoreService.userStreamById(id);
-  }
-
   Stream<ProjectModel> getProject(String id) {
     return firestoreService.projectStreamById(id);
   }
 
-  Future<MetaUserModel> getUser(String id) async {
-    return await firestoreService.getUserById(id);
+  ProjectModel getLocalProjectById(Box box, String id) {
+    print(box.toMap().values);
+    List<ProjectModel> data = [];
+
+    // box.toMap().forEach((key, value) {
+    //   box.delete(key);
+    // });
+
+    box.toMap().forEach((key, value) {
+      final temp = ProjectModel.fromJson(jsonDecode(value.toString()));
+      if (temp.id == id) data.add(temp);
+    });
+
+    return data.first;
   }
 
-  Future<List<MetaUserModel>> getAllUser(List<String> listId) async {
-    List<MetaUserModel> listUser = [];
-    for (int i = 0; i < listId.length; i++) {
-      listUser.add(await getUser(listId[i]));
-    }
-    return listUser;
+  TaskModel LocalTasks(Box box, String id) {
+    print(box.toMap().values);
+    List<TaskModel> data = [];
+
+    // box.toMap().forEach((key, value) {
+    //   box.delete(key);
+    // });
+
+    // box.deleteFromDisk();
+
+    box.toMap().forEach((key, value) {
+      final temp = TaskModel.fromJson(jsonDecode(value.toString()));
+      if (temp.id == id) data.add(temp);
+    });
+
+    bsTask.add(data.first);
+    return data.first;
   }
 
   void completedTask(String id) async {
-    startRunning();
-    await firestoreService.completedTaskById(id);
-    endRunning();
+    firestoreService.localCompletedTaskById(id);
   }
 
   void deleteTask(TaskModel deleTask) async {
-    startRunning();
-    firestoreService.getProjectById(deleTask.idProject).then((value) {
+    firestoreService.getLocalProjectById(deleTask.idProject).then((value) {
       //delete task from firebase
-      firestoreService.deleteTask(deleTask.id);
-      //send notitfication to members
-      for (var mem in deleTask.listMember) {
-        firestoreService.getUserById(mem).then((user) => {
-              if (user.token != null)
-                firestoreMessagingService.sendPushMessaging(user.token!,
-                    "TASK DELETE", "Task ${deleTask.title} has been delete")
-            });
-      }
+      firestoreService.localDeleteTask(deleTask.id);
       //delete task from project task list
-      firestoreService.deleteTaskProject(value, deleTask.id);
+      firestoreService.localDeleteTaskProject(value, deleTask.id);
     });
-    endRunning();
   }
 
   void setShowComment(bool value) {

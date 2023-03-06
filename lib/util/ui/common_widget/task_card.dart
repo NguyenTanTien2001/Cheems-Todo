@@ -37,9 +37,16 @@ class TaskCard extends StatelessWidget {
             ),
           ).pad(25, 23, 27, 27),
           Expanded(
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                toTimeString(task.dueDate)
+                    .plain()
+                    .fSize(16)
+                    .weight(FontWeight.w500)
+                    .color(AppColors.kGrayTextA)
+                    .b(),
+                SizedBox(width: 4.w),
                 task.title
                     .plain()
                     .fSize(18)
@@ -47,13 +54,6 @@ class TaskCard extends StatelessWidget {
                     .overflow(TextOverflow.ellipsis)
                     .weight(FontWeight.w600)
                     .b(),
-                SizedBox(height: 4.w),
-                toTimeString(task.dueDate)
-                    .plain()
-                    .fSize(16)
-                    .weight(FontWeight.w500)
-                    .color(AppColors.kGrayTextA)
-                    .b()
               ],
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '/base/base_state.dart';
 import '/constants/app_colors.dart';
@@ -49,18 +50,11 @@ class MyNoteState extends BaseState<MyNoteTab, MyNoteViewModel> {
         child: Column(
           children: [
             SizedBox(height: 32.w),
-            StreamBuilder<List<QuickNoteModel>?>(
-                stream: getVm().bsListQuickNote,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Something went wrong');
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
-                  }
-
-                  List<QuickNoteModel> data = snapshot.data!;
+            ValueListenableBuilder(
+                valueListenable: Hive.box('quick_note').listenable(),
+                builder: (context, box, Widget) {
+                  List<QuickNoteModel> data =
+                      getVm().LocalQuickNotes(box as Box);
                   return Column(
                     children: [
                       if (data.length == 0) buildNoneNote(),

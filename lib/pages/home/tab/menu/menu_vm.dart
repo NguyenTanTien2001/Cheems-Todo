@@ -14,7 +14,6 @@ class MenuViewModel extends BaseViewModel {
   void addProject(String name, int indexColor) {
     var temp = new ProjectModel(
       name: name,
-      idAuthor: user!.uid,
       indexColor: indexColor,
       timeCreate: DateTime.now(),
       listTask: [],

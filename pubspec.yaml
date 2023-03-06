@@ -57,6 +57,10 @@ dependencies:
   http: ^0.13.4
   flutter_launcher_icons: ^0.9.3
   table_calendar: ^3.0.7
+  localstore: ^1.2.3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

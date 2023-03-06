@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:hive/hive.dart';
+
 import '/base/base_view_model.dart';
 import '/models/task_model.dart';
 
@@ -19,13 +23,6 @@ class MyTaskViewModel extends BaseViewModel {
       firestoreService.taskStream().listen((event) {
         List<TaskModel> listAllData = event;
         List<TaskModel> listData = [];
-        for (var task in listAllData) {
-          if (task.idAuthor == user!.uid ||
-              task.listMember.contains(user!.uid)) {
-            listData.add(task);
-            //setTaskDate(task);
-          }
-        }
         listData.sort((a, b) => b.startDate.compareTo(a.startDate));
         bsListTask.add(listData);
       });
@@ -67,6 +64,23 @@ class MyTaskViewModel extends BaseViewModel {
   //     }
   //   }
   // }
+
+  List<TaskModel> LocalTasks(Box box) {
+    print(box.toMap().values);
+    List<TaskModel> data = [];
+
+    // box.toMap().forEach((key, value) {
+    //   box.delete(key);
+    // });
+
+    // box.deleteFromDisk();
+
+    box.toMap().forEach((key, value) {
+      data.add(TaskModel.fromJson(jsonDecode(value.toString())));
+    });
+
+    return data;
+  }
 
   setToDay(bool value) {
     bsIsToDay.add(value);

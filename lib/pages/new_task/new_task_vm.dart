@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:hive/hive.dart';
+
 import '/models/task_model.dart';
 
 import '/base/base_view_model.dart';
@@ -16,22 +20,27 @@ class NewTaskViewModel extends BaseViewModel {
     }
   }
 
+  List<ProjectModel> getLocalProjects(Box box) {
+    print(box.toMap().values);
+    List<ProjectModel> data = [];
+
+    // box.toMap().forEach((key, value) {
+    //   box.delete(key);
+    // });
+
+    box.toMap().forEach((key, value) {
+      data.add(ProjectModel.fromJson(jsonDecode(value.toString())));
+    });
+
+    return data;
+  }
+
   Future<String> newTask(
       TaskModel task, ProjectModel project, List<String> listToken) async {
-    startRunning();
     // add task to database
-    String taskID = await firestoreService.addTask(task);
-    // send notification to member
-    for (var user in listToken) {
-      await firestoreMessagingService.sendPushMessaging(
-        user,
-        "NEW TASK",
-        "New task ${task.title} been create in project ${project.name}",
-      );
-    }
+    String taskID = await firestoreService.localAddTask(task);
     // add task to project
-    await firestoreService.addTaskProject(project, taskID);
-    endRunning();
+    firestoreService.localAddTaskProject(project, taskID);
     return taskID;
   }
 

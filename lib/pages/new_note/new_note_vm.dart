@@ -8,7 +8,7 @@ class NewNoteViewModel extends BaseViewModel {
   Future<void> newQuickNote(QuickNoteModel quickNote) async {
     startRunning();
     // update new quick note to network
-    await firestoreService.addQuickNote(user!.uid, quickNote);
+    await firestoreService.localAddQuickNote(quickNote);
     endRunning();
   }
 

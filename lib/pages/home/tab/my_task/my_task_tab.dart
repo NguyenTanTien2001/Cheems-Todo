@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:to_do_list/models/project_model.dart';
 
 import '/base/base_state.dart';
@@ -84,24 +85,17 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
     );
   }
 
-  Widget buildMonth() => StreamBuilder<List<TaskModel>?>(
-      stream: getVm().bsListTask,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return AppStrings.somethingWentWrong.text12().tr().center();
-        }
+  Widget buildMonth() => ValueListenableBuilder(
+        valueListenable: Hive.box('task').listenable(),
+        builder: (context, box, Widget) {
+          List<TaskModel> data = getVm().LocalTasks(box as Box);
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppStrings.loading.text12().tr().center();
-        }
-
-        List<TaskModel> data = snapshot.data!;
-
-        return Calendar(
-          getListTask: getVm().setSelectedDay,
-          data: data,
-        ).pad(18, 18, 24, 0);
-      },);
+          return Calendar(
+            getListTask: getVm().setSelectedDay,
+            data: data,
+          ).pad(18, 18, 24, 0);
+        },
+      );
 
   Widget buildToDaySwitch() => ToDaySwitch(
         isToDay: isToDay,
@@ -111,21 +105,14 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
             : AppColors.kColorNote[widget.mode!.indexColor],
       );
 
-  Widget buildListCard() => StreamBuilder<List<TaskModel>?>(
-        stream: getVm().bsListTask,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return AppStrings.somethingWentWrong.text12().tr().center();
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return AppStrings.loading.text12().tr().center();
-          }
-
-          List<TaskModel> data = snapshot.data!;
+  Widget buildListCard() => ValueListenableBuilder(
+        valueListenable: Hive.box('task').listenable(),
+        builder: (context, box, Widget) {
+          List<TaskModel> data = getVm().LocalTasks(box as Box);
 
           return ListCard(
-            data: getVm().getTaskListBySelectedDay(selectedDay: this.isSelectedDay, data: data),
+            data: getVm().getTaskListBySelectedDay(
+                selectedDay: this.isSelectedDay, data: data),
             status: taskStatus,
             mode: widget.mode,
           );
@@ -163,8 +150,6 @@ class MyTaskState extends BaseState<MyTaskTab, MyTaskViewModel> {
       ],
     ).bAppBar();
   }
-
-
 
   @override
   MyTaskViewModel getVm() => widget.watch(viewModelProvider).state;

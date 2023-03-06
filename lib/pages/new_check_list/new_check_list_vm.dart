@@ -5,15 +5,15 @@ class NewCheckListViewModel extends BaseViewModel {
   NewCheckListViewModel(ref) : super(ref);
 
   void newQuickNote(QuickNoteModel quickNote) async {
-    startRunning();
-    await firestoreService.addQuickNote(user!.uid, quickNote);
-    endRunning();
+    // startRunning();
+    await firestoreService.localAddQuickNote(quickNote);
+    // endRunning();
   }
 
   void newTaskkNote(QuickNoteModel quickNote, String taskId) async {
-    startRunning();
+    // startRunning();
     await firestoreService.addTaskNote(taskId, quickNote);
-    endRunning();
+    // endRunning();
   }
 
   @override

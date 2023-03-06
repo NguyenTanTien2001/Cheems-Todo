@@ -53,16 +53,20 @@ class HomeState extends BaseState<HomePage, HomeViewModel> {
     super.initState();
 
     //notification
-    getVm().initMessingToken();
-    requestMessagingPermission();
-    loadFCM();
-    listenFCM();
+    // getVm().initMessingToken();
+    // requestMessagingPermission();
+    // loadFCM();
+    // listenFCM();
     //tab widget
     tabWidget = [
       MyTaskTab.instance(mode: projectMode, closeProjectMode: closeProjectMode),
       ProjectTab.instance(mode: projectMode, pressMode: setProjectMode),
-      MyNoteTab.instance(mode: projectMode, ),
-      ProfileTab.instance(mode: projectMode,),
+      MyNoteTab.instance(
+        mode: projectMode,
+      ),
+      ProfileTab.instance(
+        mode: projectMode,
+      ),
     ];
   }
 
@@ -198,7 +202,7 @@ class HomeState extends BaseState<HomePage, HomeViewModel> {
 
   @override
   Widget build(BuildContext context) {
-    if (getVm().user == null) return BackToLogin();
+    // if (getVm().user == null) return BackToLogin();
     return Scaffold(
       body: buildBody(),
       floatingActionButton: AddNewButton(),

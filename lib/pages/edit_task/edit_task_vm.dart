@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:hive_flutter/adapters.dart';
 import 'package:to_do_list/models/meta_user_model.dart';
 
 import '/models/task_model.dart';
@@ -21,22 +24,41 @@ class EditTaskViewModel extends BaseViewModel {
     }
   }
 
+  List<ProjectModel> getLocalProjects(Box box) {
+    print(box.toMap().values);
+    List<ProjectModel> data = [];
+
+    box.toMap().forEach((key, value) {
+      data.add(ProjectModel.fromJson(jsonDecode(value.toString())));
+    });
+
+    return data;
+  }
+
+  TaskModel LocalTasks(Box box, String id) {
+    print(box.toMap().values);
+    List<TaskModel> data = [];
+
+    // box.toMap().forEach((key, value) {
+    //   box.delete(key);
+    // });
+
+    // box.deleteFromDisk();
+
+    box.toMap().forEach((key, value) {
+      final temp = TaskModel.fromJson(jsonDecode(value.toString()));
+      if (temp.id == id) data.add(temp);
+    });
+
+    bsTask.add(data.first);
+    return data.first;
+  }
+
   void loadTask(String taskId) {
     firestoreService.taskStreamById(taskId).listen((event) {
       bsTask.add(event);
       List<MetaUserModel> listMem =
           bsListMember.hasValue ? bsListMember.value! : [];
-      if (bsTask.value!.listMember.length > 0) {
-        for (var mem in bsTask.value!.listMember) {
-          firestoreService.userStreamById(mem).listen((event) {
-            listMem.add(event);
-            print("list mem: $listMem");
-            bsListMember.add(listMem);
-          });
-        }
-      } else {
-        bsListMember.add(listMem);
-      }
     });
   }
 
@@ -51,21 +73,19 @@ class EditTaskViewModel extends BaseViewModel {
     }
   }
 
-  Future<String> editTask(TaskModel task, ProjectModel oldproject,
-      ProjectModel newproject, List<String> oldMemberList) async {
-    startRunning();
+  Future<String> editTask(TaskModel task) async {
+    // startRunning();
     // add task to database
     String result = 'failed';
-    bool hasUpdateTask = await firestoreService.updateTask(task);
+    bool hasUpdateTask = await firestoreService.localUpdateTask(task);
     if (hasUpdateTask) result = 'success';
     // print('old project ' + oldproject.id);
     // print('new project ' + newproject.id);
-    if (oldproject.id != newproject.id) {
-      await firestoreService.deleteTaskProject(oldproject, task.id);
-      await firestoreService.addTaskProject(newproject, task.id);
-    }
-    await sendNotification(task, oldMemberList, task.listMember);
-    endRunning();
+    // if (oldproject.id != newproject.id) {
+    //   await firestoreService.deleteTaskProject(oldproject, task.id);
+    //   await firestoreService.addTaskProject(newproject, task.id);
+    // }
+    // endRunning();
     return result;
   }
 

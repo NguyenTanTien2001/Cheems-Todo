@@ -52,80 +52,81 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
   }
 
   void initQuickNoteState() {
-    getVm().bsListQuickNote.listen((networkListQuickNote) {
-      List<QuickNoteModel> listNote = networkListQuickNote!
-          .where((quickNote) => quickNote.listNote.length == 0)
-          .toList();
-      // update quick note length
-      if (noteLength != listNote.length) {
-        setState(() {
-          noteLength = listNote.length;
-        });
-      }
-      // update quick note successful
-      var networkNoteSuccessfulLength = listNote
-          .where((QuickNoteModel note) => note.isSuccessful == true)
-          .length;
-      if (noteSuccessfulLength != networkNoteSuccessfulLength) {
-        setState(() {
-          noteSuccessfulLength = networkNoteSuccessfulLength;
-        });
-      }
+    // getVm().bsListQuickNote.listen((networkListQuickNote) {
+    //   List<QuickNoteModel> listNote = networkListQuickNote!
+    //       .where((quickNote) => quickNote.listNote.length == 0)
+    //       .toList();
+    //   // update quick note length
+    //   if (noteLength != listNote.length) {
+    //     setState(() {
+    //       noteLength = listNote.length;
+    //     });
+    //   }
+    //   // update quick note successful
+    //   var networkNoteSuccessfulLength = listNote
+    //       .where((QuickNoteModel note) => note.isSuccessful == true)
+    //       .length;
+    //   if (noteSuccessfulLength != networkNoteSuccessfulLength) {
+    //     setState(() {
+    //       noteSuccessfulLength = networkNoteSuccessfulLength;
+    //     });
+    //   }
 
-      List<QuickNoteModel> listCheckList = networkListQuickNote
-          .where((quickNote) => quickNote.listNote.length > 0)
-          .toList();
+    //   List<QuickNoteModel> listCheckList = networkListQuickNote
+    //       .where((quickNote) => quickNote.listNote.length > 0)
+    //       .toList();
 
-      // update check list length
-      if (checkListLength != listCheckList.length) {
-        setState(() {
-          checkListLength = listCheckList.length;
-        });
-      }
+    //   // update check list length
+    //   if (checkListLength != listCheckList.length) {
+    //     setState(() {
+    //       checkListLength = listCheckList.length;
+    //     });
+    //   }
 
-      // update quick note successful
-      var networkQuickNoteSuccessfulLength =
-          listCheckList.where((element) => element.isSuccessful).length;
-      if (checkListSuccessfulLength != networkQuickNoteSuccessfulLength) {
-        setState(() {
-          checkListSuccessfulLength = networkQuickNoteSuccessfulLength;
-        });
-      }
-    });
+    //   // update quick note successful
+    //   var networkQuickNoteSuccessfulLength =
+    //       listCheckList.where((element) => element.isSuccessful).length;
+    //   if (checkListSuccessfulLength != networkQuickNoteSuccessfulLength) {
+    //     setState(() {
+    //       checkListSuccessfulLength = networkQuickNoteSuccessfulLength;
+    //     });
+    //   }
+    // });
 
-    getVm().bsListTask.listen((value) {
-      if (value != null) {
-        setState(() {
-          taskSuccessfulLength =
-              value.where((element) => element.completed).toList().length;
-          taskLength = value.length;
-        });
-      }
-    });
+    // getVm().bsListTask.listen((value) {
+    //   if (value != null) {
+    //     setState(() {
+    //       taskSuccessfulLength =
+    //           value.where((element) => element.completed).toList().length;
+    //       taskLength = value.length;
+    //     });
+    //   }
+    // });
   }
 
   void initUser() {
-    getVm().getUser().listen((networkUser) {
-      // init local user
-      if (networkUser != null) {
-        if (localUser == null) {
-          setState(() {
-            localUser = networkUser;
-          });
-        } else {
-          if (localUser!.photoURL != networkUser.photoURL) {
-            localUser!.updatePhotoURL(networkUser.photoURL);
-          }
-        }
-      }
-    });
+    // getVm().getUser().listen((networkUser) {
+    //   // init local user
+    //   if (networkUser != null) {
+    //     if (localUser == null) {
+    //       setState(() {
+    //         localUser = networkUser;
+    //       });
+    //     } else {
+    //       if (localUser!.photoURL != networkUser.photoURL) {
+    //         localUser!.updatePhotoURL(networkUser.photoURL);
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.kPrimaryBackground,
-      body: localUser == null ? 'Loading'.desc() : buildBody(),
+      // body: localUser == null ? 'Loading'.desc() : buildBody(),
+      body: buildBody(),
       appBar: buildAppBar(),
     );
   }
@@ -159,33 +160,130 @@ class ProfileState extends BaseState<ProfileTab, ProfileViewModel> {
       .bAppBar();
 
   Widget buildCardInfo() {
-    return Container(
-      width: screenWidth,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.r),
-        color: Colors.white,
-        boxShadow: AppConstants.kBoxShadow,
-      ),
-      child: StreamBuilder<infoStatus>(
-        stream: getVm().bsInfoStatus,
-        builder: (context, snapshot) {
-          return ProfileInfo(
-            user: localUser!,
-            press: () => getVm().changeInfoStatus(infoStatus.setting),
-            createTask: noteLength + checkListLength + taskLength,
-            completedTask: noteSuccessfulLength +
-                checkListSuccessfulLength +
-                taskSuccessfulLength,
-            pressToProfile: () => getVm().changeInfoStatus(infoStatus.info),
-            pressSignOut: () {
-              getVm().signOut();
-              Get.offAndToNamed(AppRoutes.SIGN_IN);
-            },
-            pressUploadAvatar: getVm().uploadAvatar,
-          );
-        },
-      ),
-    ).pad(0, 16);
+    // return Container(
+    //   width: screenWidth,
+    //   decoration: BoxDecoration(
+    //     borderRadius: BorderRadius.circular(10.r),
+    //     color: Colors.white,
+    //     boxShadow: AppConstants.kBoxShadow,
+    //   ),
+    //   child: StreamBuilder<infoStatus>(
+    //     stream: getVm().bsInfoStatus,
+    //     builder: (context, snapshot) {
+    //       return ProfileInfo(
+    //         user: localUser!,
+    //         press: () => getVm().changeInfoStatus(infoStatus.setting),
+    //         createTask: noteLength + checkListLength + taskLength,
+    //         completedTask: noteSuccessfulLength +
+    //             checkListSuccessfulLength +
+    //             taskSuccessfulLength,
+    //         pressToProfile: () => getVm().changeInfoStatus(infoStatus.info),
+    //         pressSignOut: () {
+    //           getVm().signOut();
+    //           Get.offAndToNamed(AppRoutes.SIGN_IN);
+    //         },
+    //         pressUploadAvatar: getVm().uploadAvatar,
+    //       );
+    //     },
+    //   ),
+    // ).pad(0, 16);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        buildLanguage().pad(0, 0, 0, 20),
+      ],
+    ).pad(10, 0, 0);
+  }
+
+  Widget buildLanguage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AppStrings.Language.plain()
+                .fSize(18)
+                .weight(FontWeight.w600)
+                .b()
+                .tr()
+                .pad(15, 0, 10),
+          ],
+        ),
+        SizedBox(height: 5.w),
+        if (Get.locale.toString() == 'vi_VN')
+          Row(
+            children: [
+              'Tiếng Việt'
+                  .plain()
+                  .fSize(14)
+                  .weight(FontWeight.w500)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('vi', 'VN'));
+                      Get.updateLocale(Locale('vi', 'VN'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+              SizedBox(width: 20.w),
+              'English'
+                  .plain()
+                  .fSize(14)
+                  .color(AppColors.grayText)
+                  .weight(FontWeight.w400)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('en', 'US'));
+                      Get.updateLocale(Locale('en', 'US'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+            ],
+          ).pad(10, 0, 0)
+        else
+          Row(
+            children: [
+              'Tiếng Việt'
+                  .plain()
+                  .fSize(14)
+                  .color(AppColors.grayText)
+                  .weight(FontWeight.w400)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('vi', 'VN'));
+                      Get.updateLocale(Locale('vi', 'VN'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+              SizedBox(width: 20.w),
+              'English'
+                  .plain()
+                  .fSize(14)
+                  .weight(FontWeight.w500)
+                  .b()
+                  .pad(2, 5)
+                  .inkTap(
+                    onTap: () async {
+                      await context.setLocale(Locale('en', 'US'));
+                      Get.updateLocale(Locale('en', 'US'));
+                      print(Get.locale);
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+            ],
+          ).pad(10, 0, 0),
+      ],
+    );
   }
 
   Widget buildSetting() {
